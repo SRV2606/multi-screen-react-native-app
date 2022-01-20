@@ -1,7 +1,10 @@
 import React, {Component} from 'react';
 import {Provider} from 'react-redux';
-import {createStore} from 'redux';
+import {createStore, applyMiddleware} from 'redux';
+import logger from 'redux-logger';
+import reduxThunk from 'redux-thunk';
 import reducers from './reducers';
+import reduxPromiseMiddleware from 'redux-promise-middleware';
 import {initializeApp} from 'firebase/app';
 import LoginForm from './components/LoginForm';
 
@@ -19,8 +22,14 @@ class App extends Component {
     initializeApp(firebaseConfig);
   }
   render() {
+    const middleware = applyMiddleware(
+      reduxPromiseMiddleware,
+      reduxThunk,
+      logger,
+    );
+    const store = createStore(reducers, {}, middleware);
     return (
-      <Provider store={createStore(reducers)}>
+      <Provider store={store}>
         <LoginForm />
       </Provider>
     );
